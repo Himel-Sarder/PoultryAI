@@ -3,18 +3,22 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# =====================
+# SECURITY
+# =====================
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-dev-key")
 
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = [
-    ".onrender.com",
-    "localhost",
     "127.0.0.1",
+    "localhost",
+    ".onrender.com",
 ]
 
-# Applications
+# =====================
+# APPS
+# =====================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -32,7 +36,9 @@ INSTALLED_APPS = [
     'social',
 ]
 
-# Middleware
+# =====================
+# MIDDLEWARE
+# =====================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -47,6 +53,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'poultry_farm.urls'
 
+# =====================
+# TEMPLATES
+# =====================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -68,74 +77,73 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'poultry_farm.wsgi.application'
 
-# PostgreSQL (Render Database)
+# =====================
+# DATABASE (SQLite)
+# =====================
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-# Password Validation
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'
-    },
-]
-
+# =====================
+# AUTH
+# =====================
 AUTH_USER_MODEL = 'accounts.User'
 
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
+
+# =====================
+# LANGUAGE / TIME
+# =====================
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Dhaka'
-
 USE_I18N = True
 USE_TZ = True
 
-# Static Files
+# =====================
+# STATIC FILES (IMPORTANT FOR RENDER)
+# =====================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = (
-    'whitenoise.storage.CompressedManifestStaticFilesStorage'
-)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media Files
+# =====================
+# MEDIA FILES
+# =====================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# =====================
+# DEFAULT AUTO FIELD
+# =====================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Authentication
+# =====================
+# LOGIN SETTINGS
+# =====================
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-MESSAGE_STORAGE = (
-    'django.contrib.messages.storage.session.SessionStorage'
-)
+# =====================
+# MESSAGES
+# =====================
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-# Security Headers
+# =====================
+# SECURITY (Render Safe)
+# =====================
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
 ]
-
-SECURE_PROXY_SSL_HEADER = (
-    'HTTP_X_FORWARDED_PROTO',
-    'https'
-)
 
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
