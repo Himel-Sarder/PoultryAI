@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Poultry Farm Management System{% endblock %}</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top shadow">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="{% url 'home' %}">
+            <i class="fas fa-feather-alt me-2"></i>পোল্ট্রি ফার্ম
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="d-flex mx-auto w-50" method="GET" action="{% url 'products:product_list' %}">
+                <input class="form-control me-2" type="search" name="q" placeholder="Search products, farms..." value="{{ request.GET.q }}">
+                <button class="btn btn-warning" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'products:product_list' %}"><i class="fas fa-box"></i> Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'farms:farm_list' %}"><i class="fas fa-tractor"></i> Farms</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'social:feed' %}"><i class="fas fa-rss"></i> Feed</a></li>
+                {% if user.is_authenticated %}
+                    {% if user.is_buyer %}
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{% url 'orders:cart' %}">
+                            <i class="fas fa-shopping-cart"></i>
+                            {% if cart_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ cart_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{% url 'notifications:list' %}">
+                            <i class="fas fa-bell"></i>
+                            {% if notification_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ notification_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" class="rounded-circle me-1" width="28" height="28" style="object-fit:cover">
+                            {% else %}
+                            <i class="fas fa-user-circle"></i>
+                            {% endif %}
+                            {{ user.full_name|truncatechars:15 }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            {% if user.is_seller %}
+                            <li><a class="dropdown-item" href="{% url 'farms:my_farm' %}"><i class="fas fa-tractor me-2"></i>My Farm</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:seller_products' %}"><i class="fas fa-box me-2"></i>My Products</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'orders:order_list' %}"><i class="fas fa-list me-2"></i>My Orders</a></li>
+                            <li><a class="dropdown-item" href="{% url 'chat:chat_list' %}"><i class="fas fa-comments me-2"></i>Messages</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="btn btn-outline-light me-2" href="{% url 'accounts:login' %}">Login</a></li>
+                    <li class="nav-item"><a class="btn btn-warning" href="{% url 'accounts:register' %}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Main Content -->
+<main class="py-4">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<!-- Footer -->
+<footer class="bg-dark text-white py-5 mt-5">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold">
+                    <i class="fas fa-feather-alt me-2"></i>পোল্ট্রি ফার্ম
+                </h5>
+                <p class="text-white">
+                    Bangladesh's trusted poultry marketplace. Fresh products directly from farms to your table.
+                </p>
+            </div>
+
+            <div class="col-md-2 mb-4">
+                <h6 class="fw-bold text-white">Categories</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'products:product_list' %}?category=desi_murgi" class="text-white text-decoration-none">Desi Murgi</a></li>
+                    <li><a href="{% url 'products:product_list' %}?category=egg" class="text-white text-decoration-none">Egg</a></li>
+                    <li><a href="{% url 'products:product_list' %}?category=sonali" class="text-white text-decoration-none">Sonali Chicken</a></li>
+                    <li><a href="{% url 'products:product_list' %}?category=broiler" class="text-white text-decoration-none">Broiler</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <h6 class="fw-bold text-white">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'farms:farm_list' %}" class="text-white text-decoration-none">All Farms</a></li>
+                    <li><a href="{% url 'social:feed' %}" class="text-white text-decoration-none">Farm Feed</a></li>
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'chat:ai_chat' %}" class="text-white text-decoration-none">
+                            AI Assistant
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <h6 class="fw-bold text-white">Payment Methods</h6>
+                <p class="text-white mb-1">
+                    <i class="fas fa-mobile-alt me-2"></i>bKash: 01745532992
+                </p>
+                <p class="text-white">
+                    <i class="fas fa-mobile-alt me-2"></i>Nagad: 01745532992
+                </p>
+            </div>
+
+        </div>
+
+        <hr class="border-light">
+
+        <p class="text-center text-white mb-0">
+            &copy; 2024 Poultry Farm Management System. All rights reserved.
+        </p>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

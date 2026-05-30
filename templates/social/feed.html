@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load social_tags %}
+{% block title %}Farm Feed{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <h4 class="fw-bold mb-4"><i class="fas fa-rss me-2 text-success"></i>Farm Feed</h4>
+
+            {% if user.is_authenticated and user.is_seller %}
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body">
+                    <form method="post" action="{% url 'social:create_post' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="d-flex gap-3 align-items-start">
+                            {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" class="rounded-circle" width="42" height="42" style="object-fit:cover;flex-shrink:0">
+                            {% else %}
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width:42px;height:42px;flex-shrink:0">{{ user.full_name|first|upper }}</div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <textarea name="content" class="form-control mb-2" rows="3" placeholder="Share a farm update..."></textarea>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <input type="file" name="image" class="form-control form-control-sm w-auto" accept="image/*">
+                                    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-paper-plane me-1"></i>Post</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            {% for post in posts %}
+            <div class="post-card card">
+                <div class="card-body">
+                    <!-- Post Header -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            {% if post.seller.profile_image %}
+                            <img src="{{ post.seller.profile_image.url }}" class="rounded-circle" width="40" height="40" style="object-fit:cover">
+                            {% else %}
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width:40px;height:40px">{{ post.seller.full_name|first|upper }}</div>
+                            {% endif %}
+                            <div>
+                                <div class="fw-bold">{{ post.seller.full_name }}</div>
+                                {% if post.seller.has_farm_profile %}
+                                <a href="{% url 'farms:farm_detail' post.seller.farm_profile.pk %}" class="text-success small text-decoration-none">
+                                    <i class="fas fa-tractor me-1"></i>{{ post.seller.farm_profile.farm_name }}
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <small class="text-muted">{{ post.created_at|date:"M d, Y" }}</small>
+                            {% if user.is_authenticated and user.pk == post.seller.pk %}
+                            <form method="post" action="{% url 'social:delete_post' post.pk %}" onsubmit="return confirm('Delete post?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Post Content -->
+                    <p class="mb-2">{{ post.content }}</p>
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" class="w-100 rounded-3 mb-3" style="max-height:400px;object-fit:cover" alt="Post Image">
+                    {% endif %}
+
+                    <!-- Post Actions -->
+                    <div class="post-actions d-flex gap-3 border-top pt-2 mt-2">
+                        {% if user.is_authenticated %}
+                        {% with post|is_liked_by:user as already_liked %}
+                        <button onclick="likePost({{ post.pk }})" id="like-btn-{{ post.pk }}"
+                            class="{% if already_liked %}text-success{% endif %}">
+                            <i class="fas fa-heart me-1"></i>
+                            <span id="like-count-{{ post.pk }}">{{ post.get_like_count }}</span> Likes
+                        </button>
+                        {% endwith %}
+                        <button data-bs-toggle="collapse" data-bs-target="#comments-{{ post.pk }}">
+                            <i class="fas fa-comment me-1"></i>
+                            <span id="comment-count-{{ post.pk }}">{{ post.get_comment_count }}</span> Comments
+                        </button>
+                        {% else %}
+                        <span class="text-muted small"><i class="fas fa-heart me-1"></i>{{ post.get_like_count }} Likes</span>
+                        <span class="text-muted small"><i class="fas fa-comment me-1"></i>{{ post.get_comment_count }} Comments</span>
+                        {% endif %}
+                        <button onclick="navigator.share ? navigator.share({title:'{{ post.seller.full_name }}', url:window.location.href}) : (navigator.clipboard.writeText(window.location.href), alert('Link copied!'))">
+                            <i class="fas fa-share me-1"></i>Share
+                        </button>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="collapse mt-3" id="comments-{{ post.pk }}">
+                        <div id="comments-list-{{ post.pk }}">
+                            {% for comment in post.comments.all %}
+                            <div class="d-flex gap-2 mb-2">
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width:30px;height:30px;font-size:0.8rem;flex-shrink:0">{{ comment.user.full_name|first|upper }}</div>
+                                <div class="bg-light rounded-3 px-3 py-2 flex-grow-1">
+                                    <div class="fw-semibold small">{{ comment.user.full_name }}</div>
+                                    <div class="small">{{ comment.comment }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if user.is_authenticated %}
+                        <div class="input-group mt-2">
+                            <input type="text" id="comment-input-{{ post.pk }}" class="form-control" placeholder="Write a comment...">
+                            <button class="btn btn-success" onclick="addComment({{ post.pk }})"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="fas fa-rss fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No posts yet</h5>
+                {% if user.is_seller %}<a href="{% url 'farms:my_farm' %}" class="btn btn-success mt-2">Create Your First Post</a>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <span style="font-size:3rem">🐔</span>
+                        <h3 class="fw-bold mt-2">Create Account</h3>
+                        <p class="text-muted">Join Bangladesh's trusted poultry marketplace</p>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Full Name</label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}<div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">I am a</label>
+                            {{ form.user_type }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Password</label>
+                            {{ form.password }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Confirm Password</label>
+                            {{ form.confirm_password }}
+                        </div>
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success w-100 btn-lg">Create Account</button>
+                    </form>
+                    <p class="text-center mt-3 mb-0">Already have an account? <a href="{% url 'accounts:login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

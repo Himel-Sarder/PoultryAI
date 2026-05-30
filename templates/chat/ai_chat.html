@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}AI Assistant{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width:46px;height:46px;font-size:1.4rem">🤖</div>
+                <div>
+                    <h5 class="fw-bold mb-0">AI Poultry Assistant</h5>
+                    <small class="text-muted">Ask anything about poultry products, pricing, delivery...</small>
+                </div>
+            </div>
+
+            <div class="chat-container border rounded-4 mb-3" id="ai-chat-box" style="height:420px">
+                <div class="d-flex mb-2">
+                    <div class="chat-bubble received">
+                        Hello! I'm your AI poultry assistant. Ask me about our products, pricing, delivery, or anything else! 🐔
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="ai-input" class="form-control form-control-lg" placeholder="Ask about products, prices, delivery..." autocomplete="off">
+                <button class="btn btn-success btn-lg" onclick="sendAiMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div class="d-flex gap-2 flex-wrap mt-2">
+                <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('ai-input').value='What products are available?';sendAiMessage()">What products?</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('ai-input').value='What is the price of desi murgi?';sendAiMessage()">Desi Murgi price?</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('ai-input').value='How do I pay?';sendAiMessage()">Payment methods?</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('ai-input').value='Is your chicken halal?';sendAiMessage()">Halal certified?</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('ai-input').value='Do you have organic eggs?';sendAiMessage()">Organic eggs?</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const chatBox = document.getElementById('ai-chat-box');
+
+function addMessage(text, type) {
+    const div = document.createElement('div');
+    div.className = 'd-flex mb-2 ' + (type === 'sent' ? 'justify-content-end' : '');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + type;
+    bubble.textContent = text;
+    div.appendChild(bubble);
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function addTyping() {
+    const div = document.createElement('div');
+    div.className = 'd-flex mb-2';
+    div.id = 'typing-indicator';
+    div.innerHTML = '<div class="chat-bubble received"><span class="typing-dots">...</span></div>';
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function removeTyping() {
+    const t = document.getElementById('typing-indicator');
+    if (t) t.remove();
+}
+
+function sendAiMessage() {
+    const input = document.getElementById('ai-input');
+    const message = input.value.trim();
+    if (!message) return;
+    addMessage(message, 'sent');
+    input.value = '';
+    addTyping();
+
+    const formData = new FormData();
+    formData.append('message', message);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch('{% url "chat:ai_chat" %}', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => {
+        removeTyping();
+        addMessage(data.response, 'received');
+    })
+    .catch(() => {
+        removeTyping();
+        addMessage('Sorry, I could not process your request. Please try again.', 'received');
+    });
+}
+
+document.getElementById('ai-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') sendAiMessage();
+});
+</script>
+{% endblock %}

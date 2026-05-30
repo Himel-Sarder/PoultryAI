@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load social_tags %}
+{% block title %}{{ farm.farm_name }}{% endblock %}
+{% block content %}
+<!-- Farm Header -->
+<div class="bg-success text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                {% if farm.farm_image %}
+                <img src="{{ farm.farm_image.url }}" class="rounded-3" width="100" height="100" style="object-fit:cover">
+                {% else %}
+                <div class="rounded-3 bg-white d-flex align-items-center justify-content-center" style="width:100px;height:100px;font-size:3rem">🌾</div>
+                {% endif %}
+            </div>
+            <div class="col">
+                <h2 class="fw-bold mb-1">{{ farm.farm_name }}</h2>
+                <p class="mb-1"><i class="fas fa-map-marker-alt me-1"></i>{{ farm.location }}</p>
+                <p class="mb-0 opacity-75"><i class="fas fa-phone me-1"></i>{{ farm.contact_number }}</p>
+            </div>
+            <div class="col-auto">
+                {% if user.is_authenticated and user.is_buyer %}
+                <a href="{% url 'chat:chat_detail' farm.seller.pk %}" class="btn btn-light">
+                    <i class="fas fa-comments me-1"></i> Chat with Seller
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% if farm.description %}
+        <p class="mt-3 mb-0 opacity-90">{{ farm.description }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Products -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Products ({{ products.count }})</h5>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="?" class="btn btn-sm {% if not selected_category %}btn-success{% else %}btn-outline-success{% endif %}">All</a>
+                    <a href="?category=desi_murgi" class="btn btn-sm {% if selected_category == 'desi_murgi' %}btn-success{% else %}btn-outline-success{% endif %}">Desi Murgi</a>
+                    <a href="?category=egg" class="btn btn-sm {% if selected_category == 'egg' %}btn-success{% else %}btn-outline-success{% endif %}">Egg</a>
+                    <a href="?category=sonali" class="btn btn-sm {% if selected_category == 'sonali' %}btn-success{% else %}btn-outline-success{% endif %}">Sonali</a>
+                    <a href="?category=broiler" class="btn btn-sm {% if selected_category == 'broiler' %}btn-success{% else %}btn-outline-success{% endif %}">Broiler</a>
+                </div>
+            </div>
+            <div class="row g-3">
+                {% for product in products %}
+                <div class="col-sm-6">
+                    <div class="card product-card h-100">
+                        {% with product.get_primary_image as img %}
+                        {% if img %}
+                        <img src="{{ img.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height:160px;object-fit:cover">
+                        {% else %}
+                        <div class="card-img-top img-placeholder d-flex align-items-center justify-content-center bg-light" style="height:160px">
+                            <span style="font-size:2.5rem">{% if product.category == 'egg' %}🥚{% elif product.category == 'desi_murgi' %}🐓{% elif product.category == 'duck' %}🦆{% else %}🍗{% endif %}</span>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-1">{{ product.name }}</h6>
+                            <span class="badge bg-success mb-2">{{ product.get_category_display }}</span>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="fw-bold text-success">৳{{ product.price }}<small class="text-muted fw-normal">/{{ product.get_unit_display }}</small></span>
+                                {% if user.is_authenticated and user.is_buyer %}
+                                <a href="{% url 'orders:add_to_cart' product.pk %}" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <a href="{% url 'products:product_detail' product.pk %}" class="stretched-link"></a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12"><p class="text-muted">No products in this category.</p></div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Farm Feed Sidebar -->
+        <div class="col-lg-4">
+            <h5 class="fw-bold mb-3">Farm Updates</h5>
+            {% for post in posts %}
+            <div class="post-card card mb-3">
+                <div class="card-body">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" class="w-100 rounded mb-2" style="height:150px;object-fit:cover" alt="Post">
+                    {% endif %}
+                    <p class="mb-2">{{ post.content }}</p>
+                    <small class="text-muted">{{ post.created_at|date:"M d, Y" }}</small>
+                    <div class="post-actions d-flex gap-2 mt-2">
+                        {% if user.is_authenticated %}
+                        {% with post|is_liked_by:user as already_liked %}
+                        <button onclick="likePost({{ post.pk }})" id="like-btn-{{ post.pk }}"
+                            class="{% if already_liked %}text-success{% endif %}">
+                            <i class="fas fa-heart"></i>
+                            <span id="like-count-{{ post.pk }}">{{ post.get_like_count }}</span>
+                        </button>
+                        {% endwith %}
+                        {% else %}
+                        <span class="text-muted small"><i class="fas fa-heart"></i> {{ post.get_like_count }}</span>
+                        {% endif %}
+                        <button data-bs-toggle="collapse" data-bs-target="#comments-box-{{ post.pk }}">
+                            <i class="fas fa-comment"></i> <span id="comment-count-{{ post.pk }}">{{ post.get_comment_count }}</span>
+                        </button>
+                    </div>
+                    <div class="collapse mt-2" id="comments-box-{{ post.pk }}">
+                        <div id="comments-{{ post.pk }}" class="mb-2">
+                            {% for comment in post.comments.all|slice:":3" %}
+                            <div class="d-flex gap-2 mb-1">
+                                <small class="fw-bold">{{ comment.user.full_name }}:</small>
+                                <small>{{ comment.comment }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if user.is_authenticated %}
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="comment-input-{{ post.pk }}" class="form-control" placeholder="Add comment...">
+                            <button class="btn btn-success" onclick="addComment({{ post.pk }})"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No updates from this farm yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

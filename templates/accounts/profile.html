@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 text-center p-4">
+                {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" class="rounded-circle mb-3" style="width:100px;height:100px;object-fit:cover;border:3px solid #198754" alt="Profile">
+                {% else %}
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mb-3 mx-auto" style="width:100px;height:100px;font-size:2.5rem">
+                    {{ user.full_name|first|upper }}
+                </div>
+                {% endif %}
+                <h5 class="fw-bold">{{ user.full_name }}</h5>
+                <span class="badge bg-{% if user.is_seller %}success{% else %}primary{% endif %} mb-2">{{ user.get_user_type_display }}</span>
+                <p class="text-muted small">{{ user.email }}</p>
+                <p class="text-muted small"><i class="fas fa-phone me-1"></i>{{ user.phone_number }}</p>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'accounts:profile_update' %}" class="btn btn-success">Edit Profile</a>
+                    <a href="{% url 'accounts:change_password' %}" class="btn btn-outline-secondary">Change Password</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            {% if user.is_seller and user.has_farm_profile %}
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-tractor me-2 text-success"></i>Farm Profile</h6>
+                    <p class="mb-1"><strong>Farm Name:</strong> {{ user.farm_profile.farm_name }}</p>
+                    <p class="mb-1"><strong>Location:</strong> {{ user.farm_profile.location }}</p>
+                    <p class="mb-0"><strong>Status:</strong>
+                        <span class="badge {% if user.farm_profile.is_verified %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if user.farm_profile.is_verified %}Verified{% else %}Pending Verification{% endif %}
+                        </span>
+                    </p>
+                    <a href="{% url 'farms:edit_farm' %}" class="btn btn-sm btn-outline-success mt-3">Edit Farm</a>
+                </div>
+            </div>
+            {% endif %}
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-list me-2 text-success"></i>Recent Orders</h6>
+                    {% with user.orders.all|slice:":5" as recent_orders %}
+                    {% for order in recent_orders %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <div>
+                            <span class="fw-semibold">Order #{{ order.pk }}</span>
+                            <small class="text-muted ms-2">{{ order.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% elif order.status == 'processing' %}info{% else %}warning{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                            <span class="ms-2 fw-bold">৳{{ order.total_amount }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No orders yet.</p>
+                    {% endfor %}
+                    {% endwith %}
+                    <a href="{% url 'orders:order_list' %}" class="btn btn-sm btn-outline-success mt-3">View All Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

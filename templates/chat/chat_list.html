@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Messages{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0"><i class="fas fa-comments me-2 text-success"></i>Messages</h4>
+                <a href="{% url 'chat:ai_chat' %}" class="btn btn-outline-success btn-sm"><i class="fas fa-robot me-1"></i>AI Assistant</a>
+            </div>
+            <div class="card border-0 shadow-sm rounded-4">
+                {% if conversations %}
+                {% for conv in conversations %}
+                <a href="{% url 'chat:chat_detail' conv.contact.pk %}" class="text-decoration-none">
+                    <div class="d-flex align-items-center gap-3 px-4 py-3 border-bottom {% if conv.unread %}bg-light{% endif %} chat-conv-item" style="transition:background 0.2s">
+                        {% if conv.contact.profile_image %}
+                        <img src="{{ conv.contact.profile_image.url }}" class="rounded-circle" width="48" height="48" style="object-fit:cover;flex-shrink:0">
+                        {% else %}
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width:48px;height:48px;flex-shrink:0;font-size:1.2rem">{{ conv.contact.full_name|first|upper }}</div>
+                        {% endif %}
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-semibold text-dark">{{ conv.contact.full_name }}</span>
+                                {% if conv.last_message %}<small class="text-muted">{{ conv.last_message.created_at|date:"M d" }}</small>{% endif %}
+                            </div>
+                            {% if conv.last_message %}
+                            <div class="text-muted small text-truncate">{{ conv.last_message.message }}</div>
+                            {% endif %}
+                        </div>
+                        {% if conv.unread %}
+                        <span class="badge bg-success rounded-pill">{{ conv.unread }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No conversations yet.</p>
+                    {% if user.is_buyer %}<a href="{% url 'farms:farm_list' %}" class="btn btn-success btn-sm">Browse Farms to Chat</a>{% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Images -->
+        <div class="col-md-5">
+            {% with product.get_primary_image as primary_img %}
+            {% if primary_img %}
+            <img src="{{ primary_img.image.url }}" class="w-100 rounded-4 shadow-sm mb-3" style="max-height:380px;object-fit:cover" id="main-img" alt="{{ product.name }}">
+            {% else %}
+            <div class="w-100 rounded-4 bg-light d-flex align-items-center justify-content-center mb-3" style="height:380px;font-size:7rem">
+                {% if product.category == 'egg' %}🥚{% elif product.category == 'desi_murgi' %}🐓{% elif product.category == 'duck' %}🦆{% else %}🍗{% endif %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            {% if product.images.count > 1 %}
+            <div class="d-flex gap-2 flex-wrap">
+                {% for img in product.images.all %}
+                <img src="{{ img.image.url }}" class="rounded cursor-pointer border" width="70" height="70" style="object-fit:cover;cursor:pointer" onclick="document.getElementById('main-img').src='{{ img.image.url }}'">
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Share Buttons -->
+            <div class="mt-3">
+                <small class="text-muted me-2">Share:</small>
+                <a href="https://wa.me/?text={{ product.name }}%20-%20৳{{ product.price }}%20{{ request.build_absolute_uri }}" target="_blank" class="btn btn-sm btn-success me-1"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-sm btn-primary me-1"><i class="fab fa-facebook"></i></a>
+                <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText(window.location.href);alert('Link copied!')"><i class="fas fa-link"></i></button>
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-7">
+            <span class="badge bg-success mb-2">{{ product.get_category_display }}</span>
+            <h2 class="fw-bold mb-2">{{ product.name }}</h2>
+            {% if product.seller.has_farm_profile %}
+            <a href="{% url 'farms:farm_detail' product.seller.farm_profile.pk %}" class="text-decoration-none text-muted mb-2 d-inline-block">
+                <i class="fas fa-tractor me-1"></i>{{ product.seller.farm_profile.farm_name }}
+            </a>
+            {% endif %}
+
+            <!-- Rating -->
+            <div class="d-flex align-items-center mb-3">
+                {% with product.get_avg_rating as rating %}
+                {% for i in "12345" %}
+                <i class="fas fa-star {% if forloop.counter <= rating %}star-rating{% else %}text-muted{% endif %}"></i>
+                {% endfor %}
+                <span class="ms-2 text-muted">({{ product.get_review_count }} reviews)</span>
+                {% endwith %}
+            </div>
+
+            <div class="bg-success bg-opacity-10 rounded-3 p-3 mb-3">
+                <h3 class="fw-bold text-success mb-0">৳{{ product.price }}</h3>
+                <small class="text-muted">per {{ product.get_unit_display }}</small>
+            </div>
+
+            <table class="table table-sm table-borderless mb-3">
+                <tr><td class="text-muted">Availability:</td><td>
+                    {% if product.quantity > 0 %}<span class="text-success fw-semibold"><i class="fas fa-check-circle me-1"></i>In Stock ({{ product.quantity }} available)</span>
+                    {% else %}<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Out of Stock</span>{% endif %}
+                </td></tr>
+                <tr><td class="text-muted">Category:</td><td>{{ product.get_category_display }}</td></tr>
+                <tr><td class="text-muted">Unit:</td><td>{{ product.get_unit_display }}</td></tr>
+                <tr><td class="text-muted">Seller:</td><td>{{ product.seller.full_name }}</td></tr>
+            </table>
+
+            <p class="text-muted">{{ product.description }}</p>
+
+            {% if user.is_authenticated and user.is_buyer and product.quantity > 0 %}
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'orders:add_to_cart' product.pk %}" class="btn btn-success btn-lg">
+                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                </a>
+                {% if product.seller.id != user.id %}
+                <a href="{% url 'chat:chat_detail' product.seller.pk %}" class="btn btn-outline-success btn-lg">
+                    <i class="fas fa-comments me-2"></i>Ask Seller
+                </a>
+                {% endif %}
+            </div>
+            {% elif not user.is_authenticated %}
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-success btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Login to Buy
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-5">
+        <h4 class="fw-bold mb-4">Customer Reviews</h4>
+        <div class="row">
+            <div class="col-md-8">
+                {% for review in reviews %}
+                <div class="card border-0 shadow-sm rounded-3 mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="fw-semibold">{{ review.buyer.full_name }}</span>
+                                <div class="star-rating">
+                                    {% for i in "12345" %}
+                                    <i class="fas fa-star {% if forloop.counter > review.rating %}text-muted{% endif %}" style="font-size:0.8rem"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <p class="mb-0">{{ review.comment }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                {% if user.is_authenticated and user.is_buyer %}
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">{% if user_review %}Update Your Review{% else %}Write a Review{% endif %}</h6>
+                        <form method="post" action="{% url 'products:add_review' product.pk %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Rating</label>
+                                <select name="rating" class="form-select">
+                                    {% for i in "54321" %}
+                                    <option value="{{ i }}" {% if user_review and user_review.rating == i|add:0 %}selected{% endif %}>{{ i }} Star{% if i != '1' %}s{% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Comment</label>
+                                <textarea name="comment" class="form-control" rows="3">{% if user_review %}{{ user_review.comment }}{% endif %}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="mt-5">
+        <h4 class="fw-bold mb-4">Related Products</h4>
+        <div class="row g-3">
+            {% for p in related_products %}
+            <div class="col-sm-6 col-md-3">
+                <div class="card product-card">
+                    {% with p.get_primary_image as img %}
+                    {% if img %}<img src="{{ img.image.url }}" class="card-img-top" style="height:150px;object-fit:cover">
+                    {% else %}<div class="d-flex align-items-center justify-content-center bg-light" style="height:150px;font-size:2.5rem">🍗</div>{% endif %}
+                    {% endwith %}
+                    <div class="card-body py-2">
+                        <h6 class="fw-bold mb-1 small">{{ p.name }}</h6>
+                        <span class="text-success fw-bold">৳{{ p.price }}</span>
+                    </div>
+                    <a href="{% url 'products:product_detail' p.pk %}" class="stretched-link"></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

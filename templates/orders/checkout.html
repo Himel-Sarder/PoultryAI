@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h4 class="fw-bold mb-4"><i class="fas fa-credit-card me-2 text-success"></i>Checkout</h4>
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">Delivery Information</h6>
+                    <form method="post" id="checkout-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Delivery Address *</label>
+                            <textarea name="delivery_address" class="form-control" rows="3" placeholder="Enter full delivery address..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Phone Number *</label>
+                            <input type="text" name="phone_number" class="form-control" placeholder="01XXXXXXXXX" value="{{ request.user.phone_number }}" required>
+                        </div>
+                        <hr>
+                        <h6 class="fw-bold mb-3">Payment Information</h6>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Send payment to merchant number: <strong>01745532992</strong>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Payment Method *</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment_method" value="bkash" id="bkash" required>
+                                    <label class="form-check-label fw-semibold text-danger" for="bkash">
+                                        <i class="fas fa-mobile-alt me-1"></i> bKash
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment_method" value="nagad" id="nagad">
+                                    <label class="form-check-label fw-semibold text-warning" for="nagad">
+                                        <i class="fas fa-mobile-alt me-1"></i> Nagad
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Transaction ID *</label>
+                            <input type="text" name="transaction_id" class="form-control" placeholder="Enter your transaction ID after payment" required>
+                            <small class="text-muted">Send money to 01745532992 and enter the transaction ID here.</small>
+                        </div>
+                        <hr>
+                        <h6 class="fw-bold mb-3">Coupon Code (Optional)</h6>
+                        <div class="input-group mb-2">
+                            <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="Enter coupon code">
+                            <input type="hidden" id="cart_total" value="{{ cart.get_total }}">
+                            <button type="button" class="btn btn-outline-success" onclick="validateCoupon()">Apply</button>
+                        </div>
+                        <div id="coupon-message" class="small mt-1"></div>
+
+                        <button type="submit" class="btn btn-success w-100 btn-lg mt-4">
+                            <i class="fas fa-check-circle me-2"></i>Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <h6 class="fw-bold mb-3">Order Summary</h6>
+                {% for item in cart.items.all %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        {% with item.product.get_primary_image as img %}
+                        {% if img %}<img src="{{ img.image.url }}" width="40" height="40" class="rounded" style="object-fit:cover">
+                        {% else %}<div class="rounded bg-light d-flex align-items-center justify-content-center" style="width:40px;height:40px">🍗</div>{% endif %}
+                        {% endwith %}
+                        <div>
+                            <div class="small fw-semibold">{{ item.product.name }}</div>
+                            <div class="text-muted" style="font-size:0.75rem">Qty: {{ item.quantity }}</div>
+                        </div>
+                    </div>
+                    <span class="fw-semibold">৳{{ item.get_subtotal }}</span>
+                </div>
+                {% endfor %}
+                <hr>
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Subtotal</span>
+                    <span>৳{{ cart.get_total }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1 text-success">
+                    <span>Discount</span>
+                    <span id="discount_amount">৳0.00</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold fs-5">
+                    <span>Total</span>
+                    <span class="text-success" id="final_total">৳{{ cart.get_total }}</span>
+                </div>
+                <div class="alert alert-warning mt-3 mb-0 small">
+                    <i class="fas fa-shield-alt me-1"></i> Your order will be verified by admin after payment confirmation.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

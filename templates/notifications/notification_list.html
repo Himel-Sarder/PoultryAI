@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h4 class="fw-bold mb-4"><i class="fas fa-bell me-2 text-success"></i>Notifications</h4>
+    <div class="card border-0 shadow-sm rounded-4">
+        {% if notifications %}
+        {% for notif in notifications %}
+        <div class="notification-item {% if not notif.is_read %}unread{% endif %} px-4">
+            <div class="d-flex align-items-start gap-3">
+                <div class="mt-1">
+                    {% if notif.notification_type == 'order' %}<i class="fas fa-shopping-bag text-success fs-5"></i>
+                    {% elif notif.notification_type == 'message' %}<i class="fas fa-comments text-primary fs-5"></i>
+                    {% elif notif.notification_type == 'social' %}<i class="fas fa-heart text-danger fs-5"></i>
+                    {% else %}<i class="fas fa-info-circle text-warning fs-5"></i>{% endif %}
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold">{{ notif.title }}{% if not notif.is_read %}<span class="badge bg-success ms-2" style="font-size:0.65rem">New</span>{% endif %}</div>
+                    <div class="text-muted small">{{ notif.message }}</div>
+                    <div class="text-muted" style="font-size:0.75rem">{{ notif.created_at|date:"M d, Y H:i" }}</div>
+                </div>
+                {% if notif.link %}
+                <a href="{{ notif.link }}" class="btn btn-sm btn-outline-success">View</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No notifications yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
