@@ -3,160 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Poultry Farm Management System{% endblock %}</title>
+    <title>Poultry Farm Management System | Professional Marketplace</title>
+    <!-- Load Static placeholder for Django compatibility -->
     {% load static %}
+    <!-- Bootstrap 5 + Icons + Fonts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar Premium */
+        .navbar-premium {
+            background: linear-gradient(135deg, #0f3b2c 0%, #1b5e3f 100%);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            font-size: 1.55rem;
+            background: linear-gradient(120deg, #fff, #e0f2e9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent !important;
+        }
+        .nav-link {
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            margin: 0 2px;
+        }
+        .nav-link:hover {
+            transform: translateY(-1px);
+            color: #ffc107 !important;
+        }
+        .btn-outline-light-custom {
+            border: 1px solid rgba(255,255,255,0.5);
+            background: transparent;
+            color: white;
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .btn-outline-light-custom:hover {
+            background: white;
+            color: #1b5e3f;
+            border-color: white;
+        }
+        .btn-warning-custom {
+            background: #ffb347;
+            border: none;
+            border-radius: 40px;
+            padding: 6px 20px;
+            font-weight: 600;
+            color: #2d2a24;
+            transition: all 0.2s;
+        }
+        .btn-warning-custom:hover {
+            background: #ff9f1c;
+            transform: scale(0.98);
+        }
+        /* search bar */
+        .search-bar {
+            border-radius: 60px;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .search-btn {
+            border-radius: 60px;
+            padding: 0 24px;
+            background: #f5b042;
+            border: none;
+            font-weight: 600;
+        }
+        /* Dropdown menu styling */
+        .dropdown-menu-modern {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 0.6rem 0;
+            margin-top: 0.7rem;
+        }
+        .dropdown-item {
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.55rem 1.2rem;
+            transition: background 0.15s;
+        }
+        .dropdown-item:hover {
+            background: #eef2ff;
+        }
+
+        /* Badge counters */
+        .badge-counter {
+            position: absolute;
+            top: -6px;
+            right: -12px;
+            background: #dc2626;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 50px;
+            line-height: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Footer refinements */
+        .footer-premium {
+            background: #0a2a1f;
+            border-top: 1px solid #2c5a42;
+        }
+        .footer-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .footer-link:hover {
+            color: #ffc107;
+            text-decoration: underline;
+        }
+        /* main content fade in */
+        main {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* alert custom */
+        .alert-custom {
+            border-radius: 16px;
+            border-left: 5px solid;
+            font-weight: 500;
+        }
+        /* profile image rounding */
+        .profile-img-sm {
+            width: 30px;
+            height: 30px;
+            object-fit: cover;
+            border-radius: 100%;
+            border: 1.5px solid rgba(255,215,0,0.6);
+        }
+        .cart-icon {
+            font-size: 1.2rem;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top shadow">
-    <div class="container">
-        <a class="navbar-brand fw-bold fs-4" href="{% url 'home' %}">
-            <i class="fas fa-feather-alt me-2"></i>পোল্ট্রি ফার্ম
+
+<!-- Premium Navbar -->
+<nav class="navbar navbar-expand-lg navbar-premium sticky-top shadow-sm">
+    <div class="container px-2 px-lg-3">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+            <i class="fas fa-feather-alt me-2" style="color: #ffd966;"></i> POULTRY FARM
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <form class="d-flex mx-auto w-50" method="GET" action="{% url 'products:product_list' %}">
-                <input class="form-control me-2" type="search" name="q" placeholder="Search products, farms..." value="{{ request.GET.q }}">
-                <button class="btn btn-warning" type="submit"><i class="fas fa-search"></i></button>
+            <!-- Global Search Form -->
+            <form class="d-flex mx-auto my-2 my-lg-0 w-100 w-lg-50" method="GET" action="{% url 'products:product_list' %}">
+                <div class="input-group shadow-sm">
+                    <input class="form-control search-bar" type="search" name="q" placeholder="Search products, farms, categories..." value="{{ request.GET.q }}" aria-label="Search">
+                    <button class="btn search-btn" type="submit"><i class="fas fa-search me-1"></i> Find</button>
+                </div>
             </form>
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'products:product_list' %}"><i class="fas fa-box"></i> Products</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'farms:farm_list' %}"><i class="fas fa-tractor"></i> Farms</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'social:feed' %}"><i class="fas fa-rss"></i> Feed</a></li>
+
+            <ul class="navbar-nav ms-auto mt-3 mt-lg-0 align-items-center gap-1">
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'home' %}"><i class="fas fa-home me-1"></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'products:product_list' %}"><i class="fas fa-box me-1"></i> Products</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'farms:farm_list' %}"><i class="fas fa-tractor me-1"></i> Farms</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'social:feed' %}"><i class="fas fa-rss me-1"></i> Feed</a></li>
+
                 {% if user.is_authenticated %}
+                    <!-- Cart for buyer -->
                     {% if user.is_buyer %}
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{% url 'orders:cart' %}">
-                            <i class="fas fa-shopping-cart"></i>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link text-white" href="{% url 'orders:cart' %}">
+                            <i class="fas fa-shopping-cart cart-icon"></i>
                             {% if cart_count > 0 %}
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ cart_count }}</span>
+                            <span class="badge-counter">{{ cart_count }}</span>
                             {% endif %}
                         </a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{% url 'notifications:list' %}">
+
+                    <!-- Notifications -->
+                    <li class="nav-item position-relative">
+                        <a class="nav-link text-white" href="{% url 'notifications:list' %}">
                             <i class="fas fa-bell"></i>
                             {% if notification_count > 0 %}
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ notification_count }}</span>
+                            <span class="badge-counter">{{ notification_count }}</span>
                             {% endif %}
                         </a>
                     </li>
+
+                    <!-- User Dropdown Profile -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {% if user.profile_image %}
-                            <img src="{{ user.profile_image.url }}" class="rounded-circle me-1" width="28" height="28" style="object-fit:cover">
+                            <img src="{{ user.profile_image.url }}" class="profile-img-sm me-2" alt="profile">
                             {% else %}
-                            <i class="fas fa-user-circle"></i>
+                            <i class="fas fa-user-circle fa-lg me-1"></i>
                             {% endif %}
-                            {{ user.full_name|truncatechars:15 }}
+                            <span class="fw-semibold">{{ user.full_name|truncatechars:14 }}</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <ul class="dropdown-menu dropdown-menu-modern dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-id-card me-2 text-success"></i> My Profile</a></li>
                             {% if user.is_seller %}
-                            <li><a class="dropdown-item" href="{% url 'farms:my_farm' %}"><i class="fas fa-tractor me-2"></i>My Farm</a></li>
-                            <li><a class="dropdown-item" href="{% url 'products:seller_products' %}"><i class="fas fa-box me-2"></i>My Products</a></li>
+                            <li><a class="dropdown-item" href="{% url 'farms:my_farm' %}"><i class="fas fa-tractor me-2 text-success"></i> My Farm Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:seller_products' %}"><i class="fas fa-egg me-2 text-success"></i> Manage Products</a></li>
                             {% endif %}
-                            <li><a class="dropdown-item" href="{% url 'orders:order_list' %}"><i class="fas fa-list me-2"></i>My Orders</a></li>
-                            <li><a class="dropdown-item" href="{% url 'chat:chat_list' %}"><i class="fas fa-comments me-2"></i>Messages</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:order_list' %}"><i class="fas fa-receipt me-2 text-success"></i> Order History</a></li>
+                            <li><a class="dropdown-item" href="{% url 'chat:chat_list' %}"><i class="fas fa-comment-dots me-2 text-success"></i> Messages</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                         </ul>
                     </li>
                 {% else %}
-                    <li class="nav-item"><a class="btn btn-outline-light me-2" href="{% url 'accounts:login' %}">Login</a></li>
-                    <li class="nav-item"><a class="btn btn-warning" href="{% url 'accounts:register' %}">Register</a></li>
+                    <li class="nav-item"><a class="btn btn-outline-light-custom me-2" href="{% url 'accounts:login' %}"><i class="fas fa-key me-1"></i> Login</a></li>
+                    <li class="nav-item"><a class="btn btn-warning-custom" href="{% url 'accounts:register' %}"><i class="fas fa-user-plus me-1"></i> Register</a></li>
                 {% endif %}
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Messages -->
+<!-- Django Messages with modern styling -->
 {% if messages %}
-<div class="container mt-3">
+<div class="container mt-4">
     {% for message in messages %}
-    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-custom alert-dismissible fade show shadow-sm" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2 fs-5"></i>
+            <span>{{ message }}</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 
-<!-- Main Content -->
+<!-- Main Content Block -->
 <main class="py-4">
-    {% block content %}{% endblock %}
+    {% block content %}
+    <!-- Default placeholder content (optional) -->
+    <div class="container text-center py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="bg-white rounded-4 p-5 shadow-sm">
+                    <i class="fas fa-feather-alt fa-4x text-success mb-3"></i>
+                    <h3 class="fw-semibold">Poultry Farm Management</h3>
+                    <p class="text-secondary">Professional platform connecting farmers and buyers across Bangladesh.</p>
+                    <hr>
+                    <p class="small text-muted">Welcome to the next generation of agricultural commerce.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
 </main>
 
-<!-- Footer -->
-<!-- Footer -->
-<footer class="bg-dark text-white py-5 mt-5">
+<!-- Premium Footer -->
+<footer class="footer-premium text-white pt-5 pb-4 mt-5">
     <div class="container">
-        <div class="row">
-
-            <div class="col-md-4 mb-4">
-                <h5 class="fw-bold">
-                    <i class="fas fa-feather-alt me-2"></i>পোল্ট্রি ফার্ম
-                </h5>
-                <p class="text-white">
-                    Bangladesh's trusted poultry marketplace. Fresh products directly from farms to your table.
-                </p>
+        <div class="row g-4">
+            <!-- Brand column -->
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-feather-alt fs-3 me-2 text-warning"></i>
+                    <span class="fw-bold fs-4">Poultry<span class="text-warning">Farm</span></span>
+                </div>
+                <p class="text-white-50 small lh-base">Bangladesh’s trusted digital marketplace for fresh poultry, eggs, and farm supplies. Quality verified, farm-fresh delivery.</p>
+                <div class="mt-3">
+                    <span class="badge bg-success bg-opacity-25 text-light px-3 py-2 rounded-pill"><i class="fas fa-shield-alt me-1"></i> 100% Safe Trade</span>
+                </div>
             </div>
 
-            <div class="col-md-2 mb-4">
-                <h6 class="fw-bold text-white">Categories</h6>
+            <!-- Categories -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="fw-bold text-uppercase small text-warning mb-3">Shop by Category</h6>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'products:product_list' %}?category=desi_murgi" class="text-white text-decoration-none">Desi Murgi</a></li>
-                    <li><a href="{% url 'products:product_list' %}?category=egg" class="text-white text-decoration-none">Egg</a></li>
-                    <li><a href="{% url 'products:product_list' %}?category=sonali" class="text-white text-decoration-none">Sonali Chicken</a></li>
-                    <li><a href="{% url 'products:product_list' %}?category=broiler" class="text-white text-decoration-none">Broiler</a></li>
+                    <li class="mb-2"><a href="{% url 'products:product_list' %}?category=desi_murgi" class="footer-link"><i class="fas fa-drumstick-bite me-2 fa-xs"></i>Desi Murgi</a></li>
+                    <li class="mb-2"><a href="{% url 'products:product_list' %}?category=egg" class="footer-link"><i class="fas fa-circle me-2 fa-xs"></i>Fresh Eggs</a></li>
+                    <li class="mb-2"><a href="{% url 'products:product_list' %}?category=sonali" class="footer-link"><i class="fas fa-kiwi-bird me-2 fa-xs"></i>Sonali Chicken</a></li>
+                    <li class="mb-2"><a href="{% url 'products:product_list' %}?category=broiler" class="footer-link"><i class="fas fa-dog me-2 fa-xs"></i>Broiler</a></li>
                 </ul>
             </div>
 
-            <div class="col-md-3 mb-4">
-                <h6 class="fw-bold text-white">Quick Links</h6>
+            <!-- Quick links -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="fw-bold text-uppercase small text-warning mb-3">Resources</h6>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'farms:farm_list' %}" class="text-white text-decoration-none">All Farms</a></li>
-                    <li><a href="{% url 'social:feed' %}" class="text-white text-decoration-none">Farm Feed</a></li>
+                    <li class="mb-2"><a href="{% url 'farms:farm_list' %}" class="footer-link"><i class="fas fa-map-marker-alt me-2"></i>Verified Farms</a></li>
+                    <li class="mb-2"><a href="{% url 'social:feed' %}" class="footer-link"><i class="fas fa-newspaper me-2"></i>Community Feed</a></li>
                     {% if user.is_authenticated %}
-                    <li>
-                        <a href="{% url 'chat:ai_chat' %}" class="text-white text-decoration-none">
-                            AI Assistant
-                        </a>
-                    </li>
+                    <li class="mb-2"><a href="{% url 'chat:ai_chat' %}" class="footer-link"><i class="fas fa-robot me-2"></i>AI Smart Assistant</a></li>
                     {% endif %}
+                    <li class="mb-2"><a href="#" class="footer-link"><i class="fas fa-headset me-2"></i>Support Center</a></li>
                 </ul>
             </div>
 
-            <div class="col-md-3 mb-4">
-                <h6 class="fw-bold text-white">Payment Methods</h6>
-                <p class="text-white mb-1">
-                    <i class="fas fa-mobile-alt me-2"></i>bKash: 01745532992
-                </p>
-                <p class="text-white">
-                    <i class="fas fa-mobile-alt me-2"></i>Nagad: 01745532992
-                </p>
+            <!-- Payment & contact -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="fw-bold text-uppercase small text-warning mb-3">Payment Partners</h6>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="bg-dark bg-opacity-25 px-3 py-1 rounded-pill"><i class="fab fa-btc me-1"></i> bKash</span>
+                    <span class="bg-dark bg-opacity-25 px-3 py-1 rounded-pill"><i class="fas fa-mobile-alt me-1"></i> Nagad</span>
+                    <span class="bg-dark bg-opacity-25 px-3 py-1 rounded-pill"><i class="fab fa-cc-visa"></i> Visa</span>
+                    <span class="bg-dark bg-opacity-25 px-3 py-1 rounded-pill"><i class="fab fa-cc-mastercard"></i> Master</span>
+                </div>
+                <p class="text-white-50 small mb-1"><i class="fas fa-phone-alt me-2 text-warning"></i> Hotline: +880 1745 532 992</p>
+                <p class="text-white-50 small"><i class="far fa-envelope me-2 text-warning"></i> hello@poultryfarm.bd</p>
+                <div class="mt-2">
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white-50"><i class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
-
         </div>
-
-        <hr class="border-light">
-
-        <p class="text-center text-white mb-0">
-            &copy; 2024 Poultry Farm Management System. All rights reserved.
-        </p>
+        <hr class="border-secondary my-4">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="small text-white-50 mb-0">&copy; 2024 Poultry Farm Management System. All intellectual rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                <span class="small text-white-50"><i class="fas fa-leaf me-1"></i> Sustainable farming & fair trade</span>
+            </div>
+        </div>
     </div>
 </footer>
+
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'js/main.js' %}"></script>
+<!-- Main JS placeholder -->
+<script>
+    // Additional interactive behavior: auto-hide alerts after 5 sec, tooltip init
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-dismiss flash messages after 5 seconds
+        const alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        });
+        // Enable any bootstrap tooltips if needed
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>
