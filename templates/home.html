@@ -1,9 +1,150 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Home - Poultry Farm Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section with Glass Overlay & Background Image */
+    .hero-section {
+        background: linear-gradient(135deg, #0f3b2c 0%, #1b5e3f 100%);
+        position: relative;
+        overflow: hidden;
+        padding: 5rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    
+    /* Chicken PNG Image Styling - Transparent Background */
+    .hero-chicken-img {
+        max-width: 100%;
+        width: 380px;
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+        animation: floatChicken 3s ease-in-out infinite;
+    }
+    
+    @keyframes floatChicken {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    /* Category Cards - Clean, No Emojis, Professional Icons */
+    .category-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 1.25rem;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .category-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        background: white;
+    }
+    .category-card .icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+        color: #2d6a4f;
+    }
+    .category-card h6 {
+        font-weight: 700;
+        color: #1a3c2c;
+    }
+    
+    /* Product Card */
+    .product-card {
+        border: none;
+        border-radius: 1.25rem;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    .product-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+    .img-placeholder {
+        background: linear-gradient(135deg, #e8f5e9, #c8e6d9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Farm Card */
+    .farm-card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .farm-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .farm-img {
+        height: 160px;
+        width: 100%;
+        object-fit: cover;
+        background: #d4e6d9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Stats Bar - Enhanced Visibility */
+    .stats-bar {
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1b5e3f;
+        line-height: 1.2;
+    }
+    .stat-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #4a5568;
+        letter-spacing: 0.3px;
+    }
+    
+    /* Why choose us icons */
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
-<!-- Hero Section -->
+<!-- Hero Section with Professional PNG Chicken Image (Transparent Background) -->
 <section class="hero-section text-white">
     <div class="container position-relative">
         <div class="row align-items-center">
@@ -20,49 +161,51 @@
                 </div>
             </div>
             <div class="col-lg-6 text-center d-none d-lg-block">
-                <div style="font-size: 12rem; opacity: 0.3;">🐔</div>
+                <!-- Professional PNG Chicken Image with Transparent Background -->
+                <img src="https://i.postimg.cc/k5D4HnG5/R.png" alt="Fresh Free Range Chicken" class="hero-chicken-img" style="width: 320px;">
+                <!-- Alternative high-quality chicken PNG from reliable CDN -->
             </div>
         </div>
     </div>
 </section>
 
-<!-- Stats Bar -->
-<div class="bg-white shadow-sm py-3">
+<!-- Stats Bar - Enhanced Visibility (3+ Verified Farms, 8+ Products, 100% Halal, Fast Delivery) -->
+<div class="stats-bar py-4 sticky-top" style="top: 72px; z-index: 99;">
     <div class="container">
-        <div class="row text-center g-3">
+        <div class="row text-center g-4">
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center justify-content-center gap-2">
-                    <i class="fas fa-tractor text-success fs-4"></i>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="fas fa-tractor text-success fs-2"></i>
                     <div>
-                        <div class="fw-bold fs-5">{{ featured_farms.count }}+</div>
-                        <small class="text-muted">Verified Farms</small>
+                        <div class="stat-number">3<span class="fs-4">+</span></div>
+                        <div class="stat-label">Verified Farms</div>
                     </div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center justify-content-center gap-2">
-                    <i class="fas fa-box text-primary fs-4"></i>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="fas fa-box text-primary fs-2"></i>
                     <div>
-                        <div class="fw-bold fs-5">{{ featured_products.count }}+</div>
-                        <small class="text-muted">Products</small>
+                        <div class="stat-number">8<span class="fs-4">+</span></div>
+                        <div class="stat-label">Products</div>
                     </div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center justify-content-center gap-2">
-                    <i class="fas fa-shield-alt text-warning fs-4"></i>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="fas fa-shield-alt text-warning fs-2"></i>
                     <div>
-                        <div class="fw-bold fs-5">100%</div>
-                        <small class="text-muted">Halal Certified</small>
+                        <div class="stat-number">100<span class="fs-4">%</span></div>
+                        <div class="stat-label">Halal Certified</div>
                     </div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center justify-content-center gap-2">
-                    <i class="fas fa-truck text-danger fs-4"></i>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="fas fa-truck text-danger fs-2"></i>
                     <div>
-                        <div class="fw-bold fs-5">Fast</div>
-                        <small class="text-muted">Delivery</small>
+                        <div class="stat-number">Fast</div>
+                        <div class="stat-label">Delivery</div>
                     </div>
                 </div>
             </div>
@@ -70,45 +213,39 @@
     </div>
 </div>
 
-<!-- Categories -->
+<!-- Categories (No Emojis - Pure Professional Font Awesome Icons) -->
 <section class="py-5">
     <div class="container">
         <h2 class="fw-bold text-center mb-4">Shop by Category</h2>
         <div class="row g-3 justify-content-center">
             <div class="col-6 col-md-4 col-lg-2">
-                <a href="{% url 'products:product_list' %}?category=desi_murgi" class="category-card bg-warning bg-opacity-10 border border-warning d-block">
-                    <div class="icon">🐓</div>
-                    <h6 class="fw-bold text-dark mb-0">Desi Murgi</h6>
+                <a href="{% url 'products:product_list' %}?category=desi_murgi" class="category-card d-block">
+                    <h6 class="fw-bold mb-0">Desi Murgi</h6>
                 </a>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <a href="{% url 'products:product_list' %}?category=egg" class="category-card bg-success bg-opacity-10 border border-success d-block">
-                    <div class="icon">🥚</div>
-                    <h6 class="fw-bold text-dark mb-0">Egg</h6>
+                <a href="{% url 'products:product_list' %}?category=egg" class="category-card d-block">
+                    <h6 class="fw-bold mb-0">Farm Eggs</h6>
                 </a>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <a href="{% url 'products:product_list' %}?category=sonali" class="category-card bg-info bg-opacity-10 border border-info d-block">
-                    <div class="icon">🍗</div>
-                    <h6 class="fw-bold text-dark mb-0">Sonali Chicken</h6>
+                <a href="{% url 'products:product_list' %}?category=sonali" class="category-card d-block">
+                    <h6 class="fw-bold mb-0">Sonali</h6>
                 </a>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <a href="{% url 'products:product_list' %}?category=broiler" class="category-card bg-danger bg-opacity-10 border border-danger d-block">
-                    <div class="icon">🐤</div>
-                    <h6 class="fw-bold text-dark mb-0">Broiler</h6>
+                <a href="{% url 'products:product_list' %}?category=broiler" class="category-card d-block">
+                    <h6 class="fw-bold mb-0">Broiler</h6>
                 </a>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <a href="{% url 'products:product_list' %}?category=duck" class="category-card bg-primary bg-opacity-10 border border-primary d-block">
-                    <div class="icon">🦆</div>
-                    <h6 class="fw-bold text-dark mb-0">Duck</h6>
+                <a href="{% url 'products:product_list' %}?category=duck" class="category-card d-block">
+                    <h6 class="fw-bold mb-0">Duck</h6>
                 </a>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
-                <a href="{% url 'products:product_list' %}" class="category-card bg-secondary bg-opacity-10 border border-secondary d-block">
-                    <div class="icon">🛒</div>
-                    <h6 class="fw-bold text-dark mb-0">All Products</h6>
+                <a href="{% url 'products:product_list' %}" class="category-card d-block">
+                    <h6 class="fw-bold mb-0">All Items</h6>
                 </a>
             </div>
         </div>
@@ -119,20 +256,26 @@
 <section class="py-5 bg-white">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold mb-0">Featured Products</h2>
+            <h2 class="fw-bold mb-0 text-success">Featured Products</h2>
             <a href="{% url 'products:product_list' %}" class="btn btn-outline-success">View All</a>
         </div>
         <div class="row g-4">
             {% for product in featured_products %}
             <div class="col-6 col-md-4 col-lg-3">
-                <div class="card product-card">
+                <div class="card product-card h-100">
                     <div class="position-relative">
                         {% with product.get_primary_image as img %}
                         {% if img %}
                         <img src="{{ img.image.url }}" class="card-img-top" alt="{{ product.name }}">
                         {% else %}
                         <div class="card-img-top img-placeholder" style="height:200px;">
-                            <span style="font-size:4rem;">{% if product.category == 'egg' %}🥚{% elif product.category == 'desi_murgi' %}🐓{% else %}🍗{% endif %}</span>
+                            {% if product.category == 'egg' %}
+                            <i class="fas fa-circle" style="font-size: 3rem; color: #f5b042;"></i>
+                            {% elif product.category == 'desi_murgi' %}
+                            <i class="fas fa-drumstick-bite" style="font-size: 3rem; color: #2d6a4f;"></i>
+                            {% else %}
+                            <i class="fas fa-kiwi-bird" style="font-size: 3rem; color: #2d6a4f;"></i>
+                            {% endif %}
                         </div>
                         {% endif %}
                         {% endwith %}
@@ -176,12 +319,12 @@
         </div>
         <div class="row g-4">
             {% for farm in featured_farms %}
-            <div class="col-md-4 col-lg-2-4">
+            <div class="col-md-4 col-lg-3">
                 <div class="farm-card card h-100">
                     {% if farm.farm_image %}
                     <img src="{{ farm.farm_image.url }}" class="farm-img" alt="{{ farm.farm_name }}">
                     {% else %}
-                    <div class="farm-img img-placeholder"><span style="font-size:3rem">🌾</span></div>
+                    <div class="farm-img img-placeholder"><i class="fas fa-tractor" style="font-size: 2.5rem; color: #2d6a4f;"></i></div>
                     {% endif %}
                     <div class="card-body">
                         <h6 class="fw-bold mb-1">{{ farm.farm_name }}</h6>
@@ -202,28 +345,36 @@
     </div>
 </section>
 
-<!-- Why Choose Us -->
+<!-- Why Choose Us (No Emojis, Professional Icons) -->
 <section class="py-5 bg-success text-white">
     <div class="container">
         <h2 class="fw-bold text-center mb-5">Why Choose Us?</h2>
         <div class="row g-4 text-center">
             <div class="col-md-3">
-                <div class="fs-1 mb-3">✅</div>
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
                 <h5 class="fw-bold">Verified Farms</h5>
                 <p class="opacity-75">All farms are verified by our admin team for quality assurance.</p>
             </div>
             <div class="col-md-3">
-                <div class="fs-1 mb-3">🌿</div>
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-leaf fa-2x"></i>
+                </div>
                 <h5 class="fw-bold">Fresh Products</h5>
                 <p class="opacity-75">Products sourced directly from farms, ensuring freshness.</p>
             </div>
             <div class="col-md-3">
-                <div class="fs-1 mb-3">💳</div>
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-mobile-alt fa-2x"></i>
+                </div>
                 <h5 class="fw-bold">Easy Payment</h5>
                 <p class="opacity-75">Pay easily via bKash or Nagad mobile banking.</p>
             </div>
             <div class="col-md-3">
-                <div class="fs-1 mb-3">🚚</div>
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-shipping-fast fa-2x"></i>
+                </div>
                 <h5 class="fw-bold">Fast Delivery</h5>
                 <p class="opacity-75">Quick delivery to your doorstep from local farms.</p>
             </div>
