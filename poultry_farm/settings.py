@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-poultry-farm-secret-key-change-in-production-2024'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', '.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
