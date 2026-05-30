@@ -1,46 +1,293 @@
 {% extends 'base.html' %}
 {% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Glassmorphism Container */
+    .glass-form-container {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(2px);
+        border-radius: 1.75rem;
+        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        transition: transform 0.2s ease;
+    }
+    
+    /* Form Header Gradient */
+    .form-header-gradient {
+        background: linear-gradient(135deg, #0f3b2c 0%, #1b5e3f 100%);
+        margin: -1px -1px 0 -1px;
+        padding: 1.25rem 1.5rem;
+        border-radius: 1.75rem 1.75rem 0 0;
+    }
+    
+    /* Form Fields Styling */
+    .form-glass-input {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 0.7rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        width: 100%;
+        background: #ffffff;
+    }
+    
+    .form-glass-input:focus {
+        border-color: #1b5e3f;
+        box-shadow: 0 0 0 3px rgba(27, 94, 63, 0.1);
+        outline: none;
+    }
+    
+    textarea.form-glass-input {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    /* File Input Custom Styling */
+    .custom-file-input {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .custom-file-input input[type="file"] {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: calc(2.5rem + 2px);
+        margin: 0;
+        opacity: 0;
+    }
+    
+    .custom-file-label {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1;
+        height: calc(2.5rem + 2px);
+        padding: 0.5rem 0.75rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #6c757d;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .custom-file-label::after {
+        content: "Browse";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 3;
+        display: block;
+        padding: 0.5rem 0.75rem;
+        line-height: 1.5;
+        color: #fff;
+        background-color: #1b5e3f;
+        border-left: 1px solid #e2e8f0;
+        border-radius: 0 0.75rem 0.75rem 0;
+    }
+    
+    /* Alert Glass Style */
+    .alert-glass-info {
+        background: rgba(27, 94, 63, 0.08);
+        border-left: 4px solid #1b5e3f;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        color: #0f3b2c;
+    }
+    
+    /* Preview Image Container */
+    .image-preview {
+        margin-top: 1rem;
+        padding: 0.5rem;
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        display: inline-block;
+    }
+    
+    .image-preview img {
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Button Styling */
+    .btn-glass-success {
+        background: linear-gradient(135deg, #1b5e3f 0%, #2d7a55 100%);
+        border: none;
+        border-radius: 2rem;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        color: white;
+    }
+    
+    .btn-glass-success:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(27, 94, 63, 0.3);
+        color: white;
+    }
+    
+    .btn-glass-outline {
+        background: transparent;
+        border: 1px solid #cbd5e1;
+        border-radius: 2rem;
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        color: #4a5568;
+    }
+    
+    .btn-glass-outline:hover {
+        background: #f1f5f9;
+        border-color: #1b5e3f;
+        color: #1b5e3f;
+    }
+    
+    /* Label Styling */
+    .form-label-modern {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Required field indicator */
+    .required-field::after {
+        content: "*";
+        color: #dc2626;
+        margin-left: 0.25rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .glass-form-container {
+            margin: 0 1rem;
+        }
+        .form-header-gradient h4 {
+            font-size: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body p-4">
-                    <h4 class="fw-bold mb-4"><i class="fas fa-tractor me-2 text-success"></i>{{ title }}</h4>
+        <div class="col-md-8 col-lg-7">
+            <div class="glass-form-container">
+                <!-- Form Header -->
+                <div class="form-header-gradient">
+                    <h4 class="fw-bold mb-0 text-white d-flex align-items-center gap-2">
+                        <i class="fas fa-tractor"></i>
+                        <span>{{ title }}</span>
+                    </h4>
+                    <p class="text-white-50 small mt-2 mb-0">
+                        <i class="fas fa-info-circle me-1"></i> Fill in your farm details to start selling
+                    </p>
+                </div>
+                
+                <!-- Form Body -->
+                <div class="p-4 p-md-5">
                     {% if not request.user.has_farm_profile %}
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>Welcome! Please complete your farm profile to start selling products.
+                    <div class="alert-glass-info d-flex align-items-start gap-3 mb-4">
+                        <i class="fas fa-seedling fs-5 mt-1" style="color: #1b5e3f;"></i>
+                        <div>
+                            <strong class="d-block mb-1">Welcome, Farm Owner!</strong>
+                            <span class="small">Complete your farm profile to list products and connect with buyers across Bangladesh.</span>
+                        </div>
                     </div>
                     {% endif %}
-                    <form method="post" enctype="multipart/form-data">
+                    
+                    <form method="post" enctype="multipart/form-data" id="farmForm">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Farm Name *</label>
+                        
+                        <!-- Farm Name -->
+                        <div class="mb-4">
+                            <label class="form-label-modern required-field">
+                                <i class="fas fa-signature text-success"></i> Farm Name
+                            </label>
                             {{ form.farm_name }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Location *</label>
-                            {{ form.location }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Farm Image</label>
-                            {{ form.farm_image }}
-                            {% if form.instance.farm_image %}
-                            <div class="mt-2"><img src="{{ form.instance.farm_image.url }}" height="80" class="rounded"></div>
+                            {% if form.farm_name.errors %}
+                            <div class="text-danger small mt-1">{{ form.farm_name.errors }}</div>
                             {% endif %}
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Contact Number *</label>
-                            {{ form.contact_number }}
-                        </div>
+                        
+                        <!-- Location -->
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Description *</label>
-                            {{ form.description }}
+                            <label class="form-label-modern required-field">
+                                <i class="fas fa-map-marker-alt text-success"></i> Location
+                            </label>
+                            {{ form.location }}
+                            <small class="text-muted d-block mt-1">Enter district, upazila or full address</small>
+                            {% if form.location.errors %}
+                            <div class="text-danger small mt-1">{{ form.location.errors }}</div>
+                            {% endif %}
                         </div>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success">Save Farm Profile</button>
+                        
+                        <!-- Farm Image -->
+                        <div class="mb-4">
+                            <label class="form-label-modern">
+                                <i class="fas fa-image text-success"></i> Farm Image
+                            </label>
+                            <div class="custom-file-input">
+                                {{ form.farm_image }}
+                                <label class="custom-file-label" for="{{ form.farm_image.id_for_label }}">Choose image...</label>
+                            </div>
+                            <small class="text-muted d-block mt-1">Upload a photo of your farm (JPG, PNG, max 5MB)</small>
+                            {% if form.instance.farm_image %}
+                            <div class="image-preview">
+                                <img src="{{ form.instance.farm_image.url }}" height="80" alt="Current farm image">
+                                <p class="small text-muted mt-1 mb-0">Current image</p>
+                            </div>
+                            {% endif %}
+                            {% if form.farm_image.errors %}
+                            <div class="text-danger small mt-1">{{ form.farm_image.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Contact Number -->
+                        <div class="mb-4">
+                            <label class="form-label-modern required-field">
+                                <i class="fas fa-phone-alt text-success"></i> Contact Number
+                            </label>
+                            {{ form.contact_number }}
+                            <small class="text-muted d-block mt-1">Example: 017XXXXXXXX</small>
+                            {% if form.contact_number.errors %}
+                            <div class="text-danger small mt-1">{{ form.contact_number.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label-modern required-field">
+                                <i class="fas fa-align-left text-success"></i> Description
+                            </label>
+                            {{ form.description }}
+                            <small class="text-muted d-block mt-1">Tell buyers about your farm, products, and farming practices</small>
+                            {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-flex flex-wrap gap-3 pt-2">
+                            <button type="submit" class="btn btn-glass-success">
+                                <i class="fas fa-save me-2"></i>Save Farm Profile
+                            </button>
                             {% if request.user.has_farm_profile %}
-                            <a href="{% url 'farms:my_farm' %}" class="btn btn-outline-secondary">Cancel</a>
+                            <a href="{% url 'farms:my_farm' %}" class="btn-glass-outline text-decoration-none">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
                             {% endif %}
                         </div>
                     </form>
@@ -49,4 +296,38 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Update file input label with selected filename
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name || 'Choose image...';
+                const label = document.querySelector('.custom-file-label');
+                if (label) {
+                    label.textContent = fileName;
+                }
+            });
+        }
+        
+        // Add input classes for Bootstrap styling
+        const formInputs = document.querySelectorAll('#farmForm input, #farmForm textarea, #farmForm select');
+        formInputs.forEach(input => {
+            if (input.type !== 'file' && input.type !== 'checkbox' && input.type !== 'radio') {
+                input.classList.add('form-glass-input');
+            }
+        });
+        
+        // Style the file input wrapper
+        const fileField = document.querySelector('#farmForm input[type="file"]');
+        if (fileField && !fileField.classList.contains('form-glass-input')) {
+            fileField.style.opacity = '0';
+            fileField.style.position = 'absolute';
+            fileField.style.width = '100%';
+            fileField.style.height = '100%';
+            fileField.style.cursor = 'pointer';
+        }
+    });
+</script>
 {% endblock %}

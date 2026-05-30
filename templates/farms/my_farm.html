@@ -1,124 +1,335 @@
 {% extends 'base.html' %}
 {% block title %}My Farm - {{ farm.farm_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Stats Card Glass */
+    .stat-card-glass {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
+        border-radius: 1.25rem;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        transition: all 0.2s ease;
+        padding: 1.25rem;
+        text-align: center;
+    }
+    .stat-card-glass:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.1);
+    }
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+    .stat-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    /* Product Card Glass */
+    .product-card-glass {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+        overflow: hidden;
+        height: 100%;
+    }
+    .product-card-glass:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
+    }
+    .product-img {
+        height: 140px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .product-img-placeholder {
+        height: 140px;
+        background: linear-gradient(135deg, #e8f5e9, #c8e6d9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Farm Header Glass */
+    .farm-header-glass {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(4px);
+        border-radius: 1.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    .farm-avatar {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 1rem;
+        border: 2px solid #1b5e3f;
+    }
+    .farm-avatar-placeholder {
+        width: 90px;
+        height: 90px;
+        border-radius: 1rem;
+        background: rgba(27, 94, 63, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Post Creation Card */
+    .post-card-glass {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(4px);
+        border-radius: 1.25rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Button Styles */
+    .btn-outline-glass {
+        border: 1px solid #1b5e3f;
+        background: transparent;
+        color: #1b5e3f;
+        border-radius: 2rem;
+        padding: 0.4rem 1.2rem;
+        transition: all 0.2s;
+    }
+    .btn-outline-glass:hover {
+        background: #1b5e3f;
+        color: white;
+    }
+    .btn-glass-success {
+        background: linear-gradient(135deg, #1b5e3f 0%, #2d7a55 100%);
+        border: none;
+        border-radius: 2rem;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-glass-success:hover {
+        transform: scale(0.98);
+        box-shadow: 0 4px 12px rgba(27, 94, 63, 0.3);
+    }
+    
+    /* Badge Styles */
+    .badge-verified {
+        background: #1b5e3f;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    .badge-pending {
+        background: #f5b042;
+        color: #2d2a24;
+        padding: 0.3rem 0.8rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    .badge-active {
+        background: #1b5e3f;
+        color: white;
+    }
+    .badge-inactive {
+        background: #9ca3af;
+        color: white;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
-    <!-- Farm Header -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body p-4">
+    <!-- Farm Header Glass Card -->
+    <div class="farm-header-glass mb-4">
+        <div class="p-4">
             <div class="row align-items-center">
                 <div class="col-auto">
                     {% if farm.farm_image %}
-                    <img src="{{ farm.farm_image.url }}" class="rounded-3" width="90" height="90" style="object-fit:cover">
+                    <img src="{{ farm.farm_image.url }}" class="farm-avatar" alt="{{ farm.farm_name }}">
                     {% else %}
-                    <div class="rounded-3 bg-success bg-opacity-10 d-flex align-items-center justify-content-center" style="width:90px;height:90px;font-size:2.5rem">🌾</div>
+                    <div class="farm-avatar-placeholder">
+                        <i class="fas fa-tractor fa-2x" style="color: #1b5e3f;"></i>
+                    </div>
                     {% endif %}
                 </div>
                 <div class="col">
-                    <h4 class="fw-bold mb-1">{{ farm.farm_name }}
-                        {% if farm.is_verified %}<span class="badge bg-success ms-2 fs-6">✓ Verified</span>{% else %}<span class="badge bg-warning ms-2">Pending</span>{% endif %}
-                    </h4>
-                    <p class="text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>{{ farm.location }}</p>
-                    <p class="text-muted mb-0"><i class="fas fa-phone me-1"></i>{{ farm.contact_number }}</p>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <h4 class="fw-bold mb-0">{{ farm.farm_name }}</h4>
+                        {% if farm.is_verified %}
+                        <span class="badge-verified"><i class="fas fa-check-circle me-1"></i> Verified</span>
+                        {% else %}
+                        <span class="badge-pending"><i class="fas fa-clock me-1"></i> Pending</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted mb-1 small"><i class="fas fa-map-marker-alt me-1" style="color: #1b5e3f;"></i>{{ farm.location }}</p>
+                    <p class="text-muted mb-0 small"><i class="fas fa-phone-alt me-1" style="color: #1b5e3f;"></i>{{ farm.contact_number }}</p>
                 </div>
-                <div class="col-auto">
-                    <a href="{% url 'farms:edit_farm' %}" class="btn btn-outline-success me-2"><i class="fas fa-edit me-1"></i>Edit Farm</a>
-                    <a href="{% url 'farms:farm_detail' farm.pk %}" class="btn btn-success"><i class="fas fa-eye me-1"></i>Public View</a>
+                <div class="col-auto mt-3 mt-sm-0">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'farms:edit_farm' %}" class="btn-outline-glass text-decoration-none">
+                            <i class="fas fa-pen me-1"></i>Edit
+                        </a>
+                        <a href="{% url 'farms:farm_detail' farm.pk %}" class="btn-glass-success text-white text-decoration-none">
+                            <i class="fas fa-eye me-1"></i>Public View
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Stats -->
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
-                <div class="fs-2 mb-1">📦</div>
-                <h4 class="fw-bold text-success">{{ products.count }}</h4>
-                <small class="text-muted">Total Products</small>
+    <!-- Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card-glass">
+                <div class="stat-icon">
+                    <i class="fas fa-box" style="color: #1b5e3f;"></i>
+                </div>
+                <div class="stat-number text-success">{{ products.count }}</div>
+                <div class="stat-label">Total Products</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
-                <div class="fs-2 mb-1">✅</div>
-                <h4 class="fw-bold text-primary">{{ products.filter.count }}</h4>
-                <small class="text-muted">Active Products</small>
+        <div class="col-6 col-md-3">
+            <div class="stat-card-glass">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle" style="color: #0d6efd;"></i>
+                </div>
+                <div class="stat-number text-primary">{{ products.filter.is_available.count|default:0 }}</div>
+                <div class="stat-label">Active Products</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
-                <div class="fs-2 mb-1">🛒</div>
-                <h4 class="fw-bold text-warning">{{ request.user.received_orders.count }}</h4>
-                <small class="text-muted">Total Orders</small>
+        <div class="col-6 col-md-3">
+            <div class="stat-card-glass">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-cart" style="color: #f5b042;"></i>
+                </div>
+                <div class="stat-number text-warning">{{ request.user.received_orders.count }}</div>
+                <div class="stat-label">Total Orders</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
-                <div class="fs-2 mb-1">⭐</div>
-                <h4 class="fw-bold text-danger">{{ farm.get_rating }}</h4>
-                <small class="text-muted">Farm Rating</small>
+        <div class="col-6 col-md-3">
+            <div class="stat-card-glass">
+                <div class="stat-icon">
+                    <i class="fas fa-star" style="color: #dc2626;"></i>
+                </div>
+                <div class="stat-number text-danger">{{ farm.get_rating|default:"0.0" }}</div>
+                <div class="stat-label">Farm Rating</div>
             </div>
         </div>
     </div>
 
-    <!-- Products -->
+    <!-- Products Section -->
     <div class="mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">My Products</h5>
-            <a href="{% url 'products:add_product' %}" class="btn btn-success"><i class="fas fa-plus me-1"></i>Add Product</a>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                <i class="fas fa-cubes" style="color: #1b5e3f;"></i>
+                <span>My Products</span>
+            </h5>
+            <a href="{% url 'products:add_product' %}" class="btn-glass-success text-white text-decoration-none">
+                <i class="fas fa-plus me-1"></i>Add Product
+            </a>
         </div>
+        
         <div class="row g-3">
             {% for product in products %}
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-3">
+            <div class="col-md-6 col-lg-4">
+                <div class="product-card-glass">
                     {% with product.get_primary_image as img %}
                     {% if img %}
-                    <img src="{{ img.image.url }}" class="card-img-top rounded-top-3" style="height:140px;object-fit:cover">
+                    <img src="{{ img.image.url }}" class="product-img" alt="{{ product.name }}">
                     {% else %}
-                    <div class="d-flex align-items-center justify-content-center bg-light rounded-top-3" style="height:140px;font-size:2.5rem">🍗</div>
+                    <div class="product-img-placeholder">
+                        {% if product.category == 'egg' %}
+                        <i class="fas fa-circle" style="font-size: 2.5rem; color: #f5b042;"></i>
+                        {% elif product.category == 'desi_murgi' %}
+                        <i class="fas fa-drumstick-bite" style="font-size: 2.5rem; color: #2d6a4f;"></i>
+                        {% else %}
+                        <i class="fas fa-kiwi-bird" style="font-size: 2.5rem; color: #2d6a4f;"></i>
+                        {% endif %}
+                    </div>
                     {% endif %}
                     {% endwith %}
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
+                    
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="flex-grow-1">
                                 <h6 class="fw-bold mb-1">{{ product.name }}</h6>
-                                <span class="badge bg-success mb-1">{{ product.get_category_display }}</span>
-                                <p class="text-success fw-bold mb-0">৳{{ product.price }}/{{ product.get_unit_display }}</p>
-                                <small class="text-muted">Qty: {{ product.quantity }}</small>
+                                <span class="badge bg-success bg-opacity-75 text-white px-2 py-1 mb-2 d-inline-block" style="font-size: 0.7rem;">
+                                    {{ product.get_category_display }}
+                                </span>
                             </div>
-                            <span class="badge {% if product.is_available %}bg-success{% else %}bg-secondary{% endif %}">
+                            <span class="badge {% if product.is_available %}badge-active{% else %}badge-inactive{% endif %} px-2 py-1" style="font-size: 0.7rem;">
                                 {% if product.is_available %}Active{% else %}Inactive{% endif %}
                             </span>
                         </div>
-                        <div class="d-flex gap-2 mt-2">
-                            <a href="{% url 'products:edit_product' product.pk %}" class="btn btn-sm btn-outline-success flex-fill"><i class="fas fa-edit"></i></a>
-                            <form method="post" action="{% url 'products:delete_product' product.pk %}" class="flex-fill" onsubmit="return confirm('Delete this product?')">
-                                {% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="fas fa-trash"></i></button>
+                        
+                        <div class="mb-2">
+                            <span class="fw-bold text-success fs-5">৳{{ product.price }}</span>
+                            <small class="text-muted"> / {{ product.get_unit_display }}</small>
+                        </div>
+                        
+                        <div class="small text-muted mb-3">
+                            <i class="fas fa-weight-hanging me-1"></i>Stock: {{ product.quantity }}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'products:edit_product' product.pk %}" class="btn-outline-glass text-decoration-none text-center flex-fill" style="padding: 0.35rem;">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form method="post" action="{% url 'products:delete_product' product.pk %}" class="flex-fill" onsubmit="return confirm('Delete this product? This action cannot be undone.')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger w-100" style="border-radius: 2rem; padding: 0.35rem;">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <div class="col-12 text-center py-4">
-                <p class="text-muted">No products yet. <a href="{% url 'products:add_product' %}">Add your first product</a></p>
+            <div class="col-12">
+                <div class="text-center py-5 bg-light rounded-4">
+                    <i class="fas fa-store-slash fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-2">No products added yet.</p>
+                    <a href="{% url 'products:add_product' %}" class="btn-glass-success text-white text-decoration-none">
+                        <i class="fas fa-plus me-1"></i>Add Your First Product
+                    </a>
+                </div>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Create Post -->
+    <!-- Create Farm Update Post -->
     <div class="mt-4">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body">
-                <h6 class="fw-bold mb-3"><i class="fas fa-pen me-2 text-success"></i>Create Farm Update</h6>
+        <div class="post-card-glass">
+            <div class="p-4">
+                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="fas fa-pen-fancy" style="color: #1b5e3f;"></i>
+                    <span>Create Farm Update</span>
+                </h6>
                 <form method="post" action="{% url 'social:create_post' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <textarea name="content" class="form-control" rows="3" placeholder="Share an update about your farm..."></textarea>
+                        <textarea name="content" class="form-control" rows="3" placeholder="Share an update about your farm, new arrivals, or offers..." style="border-radius: 1rem; border: 1px solid #e2e8f0;"></textarea>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <input type="file" name="image" class="form-control w-auto" accept="image/*">
-                        <button type="submit" class="btn btn-success">Post Update</button>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-image text-muted"></i>
+                            <input type="file" name="image" class="form-control form-control-sm" style="width: auto;" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn-glass-success text-white">
+                            <i class="fas fa-paper-plane me-1"></i>Post Update
+                        </button>
                     </div>
                 </form>
             </div>
